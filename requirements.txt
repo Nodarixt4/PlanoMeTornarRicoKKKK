@@ -1,5 +1,0 @@
-python-binance
-python-dotenv
-ta
-scikit-learn
-pandas
