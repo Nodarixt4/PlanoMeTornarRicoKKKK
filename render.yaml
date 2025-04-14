@@ -1,0 +1,7 @@
+services:
+  - type: worker
+    name: bot-cripto
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "bash start.sh"
+    autoDeploy: true
