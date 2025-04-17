@@ -57,9 +57,25 @@ def train_model(df):
     if len(X) == 0 or len(y) == 0:
         raise ValueError("Dados insuficientes após criar a janela de features")
 
-    # Utiliza SMOTE para balancear as classes
-    smote = SMOTE(random_state=42)
-    X_resampled, y_resampled = smote.fit_resample(X, y)
+    from collections import Counter
+
+    # Conta quantas amostras existem em cada classe
+    counter = Counter(y)
+    minority_class_count = min(counter.values())
+
+    try:
+        if minority_class_count > 5:
+            smote = SMOTE(k_neighbors=5, random_state=42)
+        else:
+            smote = SMOTE(k_neighbors=minority_class_count - 1, random_state=42)
+            print(f"[AVISO] Poucas amostras na classe minoritária. Usando k_neighbors={minority_class_count - 1} no SMOTE.")
+
+        X_resampled, y_resampled = smote.fit_resample(X, y)
+
+    except ValueError as e:
+        print(f"[ERRO] SMOTE falhou: {e}")
+        print("[INFO] Continuando sem SMOTE.")
+        X_resampled, y_resampled = X, y
 
     # Divide os dados em treino e teste
     X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42, shuffle=True)
